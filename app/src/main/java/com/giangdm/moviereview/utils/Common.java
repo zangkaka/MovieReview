@@ -29,4 +29,8 @@ public class Common {
         }
 
     }
+
+    public static final String URL_LOAD_IMAGE = "https://image.tmdb.org/t/p/w500";
+
+    public static final String URL_LOAD_MOVIE_POPULAR = "http://api.themoviedb.org/3/movie/popular?api_key=e7631ffcb8e766993e5ec0c1f4245f93&page=";
 }

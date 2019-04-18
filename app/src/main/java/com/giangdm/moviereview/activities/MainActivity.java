@@ -6,8 +6,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,6 +21,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.giangdm.moviereview.R;
+import com.giangdm.moviereview.adapters.ViewPagerAdapter;
+import com.giangdm.moviereview.fragments.AboutFragment;
+import com.giangdm.moviereview.fragments.FavouriteFragment;
+import com.giangdm.moviereview.fragments.MoviesFragment;
+import com.giangdm.moviereview.fragments.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -26,6 +33,14 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout mDrawer;
     private Toolbar mToolbar;
     private static final int MY_PERMISSIONS_REQUEST_EXTERNAL_STORAGE = 200;
+    private ViewPager mViewPager;
+    private TabLayout mTabLayout;
+    private int[] tabIcons = {
+            R.drawable.ic_movie,
+            R.drawable.ic_favourite,
+            R.drawable.ic_setting,
+            R.drawable.ic_info
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +65,28 @@ public class MainActivity extends AppCompatActivity
 
         }
 
+        // Create tab layout and viewpager
+        setUpViewPager(mViewPager);
+        mTabLayout.setupWithViewPager(mViewPager);
+        setupTabIcon();
+
+    }
+
+    private void setUpViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(MoviesFragment.newInstance(), getString(R.string.movies));
+        adapter.addFragment(FavouriteFragment.newInstance(), getString(R.string.favourite));
+        adapter.addFragment(SettingsFragment.newInstance(), getString(R.string.settings));
+        adapter.addFragment(AboutFragment.newInstance(), getString(R.string.about));
+        viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(4);
+    }
+
+    private void setupTabIcon() {
+        mTabLayout.getTabAt(0).setIcon(tabIcons[0]);
+        mTabLayout.getTabAt(1).setIcon(tabIcons[1]);
+        mTabLayout.getTabAt(2).setIcon(tabIcons[2]);
+        mTabLayout.getTabAt(3).setIcon(tabIcons[3]);
     }
 
     @Override
@@ -73,6 +110,9 @@ public class MainActivity extends AppCompatActivity
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        mViewPager = (ViewPager) findViewById(R.id.viewPager);
+        mTabLayout = (TabLayout) findViewById(R.id.tabLayout);
+
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -99,10 +139,6 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
