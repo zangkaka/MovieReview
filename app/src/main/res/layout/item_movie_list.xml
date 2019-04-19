@@ -19,6 +19,8 @@
             android:id="@+id/item_movie_list_title_txt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:text="@string/about"
             android:textColor="@android:color/black"
             android:textSize="16sp"
@@ -80,17 +82,17 @@
                     style="@style/movie_text_black"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
                     android:layout_below="@id/item_movie_list_date"
+                    android:layout_marginTop="6dp"
                     android:text="Rating: " />
 
                 <TextView
                     android:id="@+id/item_movie_list_rating_txt"
                     style="@style/movie_text_pink"
-                    android:layout_marginTop="6dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/item_movie_list_date"
+                    android:layout_marginTop="6dp"
                     android:layout_toRightOf="@id/item_movie_list_rating" />
 
                 <TextView

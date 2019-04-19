@@ -4,13 +4,10 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -22,13 +19,14 @@ import android.view.MenuItem;
 
 import com.giangdm.moviereview.R;
 import com.giangdm.moviereview.adapters.ViewPagerAdapter;
+import com.giangdm.moviereview.database.DBManager;
 import com.giangdm.moviereview.fragments.AboutFragment;
 import com.giangdm.moviereview.fragments.FavouriteFragment;
 import com.giangdm.moviereview.fragments.MoviesFragment;
 import com.giangdm.moviereview.fragments.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, ViewPager.OnPageChangeListener {
 
     private DrawerLayout mDrawer;
     private Toolbar mToolbar;
@@ -41,16 +39,19 @@ public class MainActivity extends AppCompatActivity
             R.drawable.ic_setting,
             R.drawable.ic_info
     };
+    public static DBManager dbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        dbManager = new DBManager(this);
+
         initViews();
 
         setSupportActionBar(mToolbar);
-
+        getSupportActionBar().setTitle(getString(R.string.movies));
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, mDrawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawer.addDrawerListener(toggle);
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity
         setUpViewPager(mViewPager);
         mTabLayout.setupWithViewPager(mViewPager);
         setupTabIcon();
-
+        mViewPager.setOnPageChangeListener(this);
     }
 
     private void setUpViewPager(ViewPager viewPager) {
@@ -138,7 +139,20 @@ public class MainActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
+        switch (id) {
+            case R.id.action_movie:
+                mViewPager.setCurrentItem(0, true);
+                break;
+            case R.id.action_fav:
+                mViewPager.setCurrentItem(1, true);
+                break;
+            case R.id.action_setting:
+                mViewPager.setCurrentItem(2, true);
+                break;
+            case R.id.action_about:
+                mViewPager.setCurrentItem(3, true);
+                break;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -165,5 +179,28 @@ public class MainActivity extends AppCompatActivity
 
         mDrawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        if (position == 0) {
+            mToolbar.setTitle(getString(R.string.movies));
+        } else if (position == 1) {
+            mToolbar.setTitle(getString(R.string.favourite));
+        } else if (position == 2) {
+            mToolbar.setTitle(getString(R.string.settings));
+        } else if (position == 3) {
+            mToolbar.setTitle(getString(R.string.about));
+        }
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
     }
 }

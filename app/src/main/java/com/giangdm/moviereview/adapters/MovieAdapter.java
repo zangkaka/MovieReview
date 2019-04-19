@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,12 +14,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.giangdm.moviereview.R;
+import com.giangdm.moviereview.activities.MainActivity;
 import com.giangdm.moviereview.interfaces.ILoadMore;
 import com.giangdm.moviereview.models.Result;
 import com.giangdm.moviereview.utils.Common;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by GiangDM on 18-04-19
@@ -77,8 +82,8 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        Result result = (Result) movieList.get(position);
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+        final Result result = (Result) movieList.get(position);
         if (holder instanceof ListViewHolder) {
             ((ListViewHolder) holder).titleTxt.setText(result.getTitle());
             ((ListViewHolder) holder).releaseDataTxt.setText(result.getReleaseDate());
@@ -90,6 +95,28 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             } else {
                 ((ListViewHolder) holder).sexImg.setVisibility(View.GONE);
             }
+            final String id = MainActivity.dbManager.getFavourite(String.valueOf(result.getId()));
+            Log.d(TAG, "onBindViewHolder: "+ String.valueOf(result.getId()));
+            if (TextUtils.equals(String.valueOf(result.getId()), id)) {
+                ((ListViewHolder) holder).starImg.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_star_on));
+            } else {
+                ((ListViewHolder) holder).starImg.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_star_off));
+            }
+
+            ((ListViewHolder) holder).starImg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (TextUtils.equals(String.valueOf(result.getId()), id)) {
+                        ((ListViewHolder) holder).starImg.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_star_off));
+                        MainActivity.dbManager.deleteFavourite(String.valueOf(result.getId()));
+                        notifyDataSetChanged();
+                    } else {
+                        ((ListViewHolder) holder).starImg.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_star_on));
+                        MainActivity.dbManager.addFavourite(String.valueOf(result.getId()));
+                        notifyDataSetChanged();
+                    }
+                }
+            });
         } else if (holder instanceof GridViewHolder) {
             ((GridViewHolder) holder).titleTxt.setText(result.getTitle());
             Picasso.with(mContext).load(Common.URL_LOAD_IMAGE + result.getPosterPath()).into(((GridViewHolder) holder).thumbnailImg);
@@ -124,7 +151,7 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         this.loadMore = loadMore;
     }
 
-    public void setLoaded(){
+    public void setLoaded() {
         isLoading = false;
     }
 
