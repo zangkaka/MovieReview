@@ -14,6 +14,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -21,6 +22,7 @@ import com.giangdm.moviereview.R;
 import com.giangdm.moviereview.adapters.ViewPagerAdapter;
 import com.giangdm.moviereview.database.DBManager;
 import com.giangdm.moviereview.fragments.AboutFragment;
+import com.giangdm.moviereview.fragments.DetailFragment;
 import com.giangdm.moviereview.fragments.FavouriteFragment;
 import com.giangdm.moviereview.fragments.MoviesFragment;
 import com.giangdm.moviereview.fragments.SettingsFragment;
@@ -124,6 +126,7 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
+
     }
 
     @Override
@@ -189,7 +192,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onPageSelected(int position) {
         if (position == 0) {
-            mToolbar.setTitle(getString(R.string.movies));
+            if (getSupportFragmentManager().findFragmentByTag("detail_fragment") != null) {
+                mToolbar.setTitle(DetailFragment.title);
+            } else {
+                mToolbar.setTitle(getString(R.string.movies));
+            }
         } else if (position == 1) {
             mToolbar.setTitle(getString(R.string.favourite));
         } else if (position == 2) {
@@ -203,4 +210,5 @@ public class MainActivity extends AppCompatActivity
     public void onPageScrollStateChanged(int state) {
 
     }
+
 }

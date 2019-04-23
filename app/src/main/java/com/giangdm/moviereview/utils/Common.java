@@ -42,6 +42,10 @@ public class Common {
 
     public static final String URL_LOAD_MOVIE_POPULAR = "http://api.themoviedb.org/3/movie/popular?api_key=e7631ffcb8e766993e5ec0c1f4245f93&page=";
 
+    public static final String URL_LOAD_MOVIE_DETAIL = "http://api.themoviedb.org/3/movie/%s?api_key=e7631ffcb8e766993e5ec0c1f4245f93";
+
+    public static final String URL_LOAD_CAST_CREW = "http://api.themoviedb.org/3/movie/%s/credits?api_key=e7631ffcb8e766993e5ec0c1f4245f93";
+
     public static String getDataFromInter(String strURL) {
         String strResult = "";
         URL url;

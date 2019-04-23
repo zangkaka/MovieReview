@@ -49,11 +49,34 @@ public class Result {
     @SerializedName("release_date")
     @Expose
     private String releaseDate;
+    private boolean isFav;
 
     public Result(String title, String posterPath, String releaseDate) {
         this.title = title;
         this.posterPath = posterPath;
         this.releaseDate = releaseDate;
+    }
+
+    public Result(Integer id, String title,String releaseDate, Double voteAverage, String overview, String posterPath, Boolean adult  ) {
+        this.id = id;
+        this.voteAverage = voteAverage;
+        this.title = title;
+        this.posterPath = posterPath;
+        this.adult = adult;
+        this.overview = overview;
+        this.releaseDate = releaseDate;
+    }
+
+    public boolean isFav() {
+        return isFav;
+    }
+
+    public void setFav(boolean fav) {
+        isFav = fav;
+    }
+
+    public Result(Integer id) {
+        this.id = id;
     }
 
     public Integer getVoteCount() {

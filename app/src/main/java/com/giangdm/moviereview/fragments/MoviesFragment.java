@@ -5,11 +5,16 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,10 +34,12 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.content.ContentValues.TAG;
+
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MoviesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class MoviesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
 
 
     public MoviesFragment() {
@@ -46,14 +53,30 @@ public class MoviesFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout refreshLayout;
-    private MovieAdapter mMovieAdapter;
+    public static MovieAdapter mMovieAdapter;
     private List<Result> list;
     private boolean mIsChangeView = false;
     private int mPage = 1;
-    private List<Result> totalList;
     private RelativeLayout maskViewLayout;
     private Movie mMovie;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: ");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart: ");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: ");
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,8 +87,6 @@ public class MoviesFragment extends Fragment implements SwipeRefreshLayout.OnRef
         maskViewLayout = view.findViewById(R.id.maskview_layout);
         refreshLayout = view.findViewById(R.id.swipe_container);
         list = new ArrayList<>();
-        totalList = new ArrayList<>();
-
         refreshLayout.setOnRefreshListener(this);
         refreshLayout.setColorSchemeResources(R.color.colorPrimary,
                 android.R.color.holo_green_dark,
@@ -73,7 +94,7 @@ public class MoviesFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 android.R.color.holo_blue_dark);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mMovieAdapter = new MovieAdapter(list, getContext(), mRecyclerView);
+        mMovieAdapter = new MovieAdapter(list, getContext(), mRecyclerView, this);
         mRecyclerView.setAdapter(mMovieAdapter);
         if (Common.isNetworkConnected(getContext())) {
             new LoadData().execute(Common.URL_LOAD_MOVIE_POPULAR + String.valueOf(mPage));
@@ -125,6 +146,29 @@ public class MoviesFragment extends Fragment implements SwipeRefreshLayout.OnRef
             Toast.makeText(getContext(), "No network", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.item_list_layout:
+                Result result = (Result) view.getTag();
+                FragmentManager manager = getFragmentManager();
+                FragmentTransaction transaction = manager.beginTransaction();
+                transaction.add(R.id.movie_container, DetailFragment.getNewInstance(String.format(Common.URL_LOAD_MOVIE_DETAIL, result.getId())), "detail_fragment");
+                transaction.addToBackStack("detail_fragment");
+                transaction.commit();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (mMovieAdapter != null)
+            mMovieAdapter.notifyDataSetChanged();
     }
 
     class LoadData extends AsyncTask<String, Void, String> {

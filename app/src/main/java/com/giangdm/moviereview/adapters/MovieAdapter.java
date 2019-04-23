@@ -11,7 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.giangdm.moviereview.R;
 import com.giangdm.moviereview.activities.MainActivity;
@@ -43,11 +45,14 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private int totalItemCount = 0;
     private int VIEW_TYPE_LOADING = 2;
 
+    private View.OnClickListener mOnClickListener;
 
-    public MovieAdapter(List<Result> movieList, Context mContext, RecyclerView recyclerView) {
+
+    public MovieAdapter(List<Result> movieList, Context mContext, RecyclerView recyclerView, View.OnClickListener onClickListener) {
         this.movieList = movieList;
         this.mContext = mContext;
         this.mRecyclerView = recyclerView;
+        this.mOnClickListener = onClickListener;
 
         final LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -95,28 +100,36 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             } else {
                 ((ListViewHolder) holder).sexImg.setVisibility(View.GONE);
             }
-            final String id = MainActivity.dbManager.getFavourite(String.valueOf(result.getId()));
-            Log.d(TAG, "onBindViewHolder: "+ String.valueOf(result.getId()));
+            String id = null;
+            if (MainActivity.dbManager.getFavourite(String.valueOf(result.getId())) != null) {
+                id = MainActivity.dbManager.getFavourite(String.valueOf(result.getId())).getId().toString();
+            }
             if (TextUtils.equals(String.valueOf(result.getId()), id)) {
                 ((ListViewHolder) holder).starImg.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_star_on));
             } else {
                 ((ListViewHolder) holder).starImg.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_star_off));
             }
 
+            final String finalId = id;
             ((ListViewHolder) holder).starImg.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (TextUtils.equals(String.valueOf(result.getId()), id)) {
+                    if (TextUtils.equals(String.valueOf(result.getId()), finalId)) {
                         ((ListViewHolder) holder).starImg.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_star_off));
                         MainActivity.dbManager.deleteFavourite(String.valueOf(result.getId()));
                         notifyDataSetChanged();
                     } else {
                         ((ListViewHolder) holder).starImg.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_star_on));
-                        MainActivity.dbManager.addFavourite(String.valueOf(result.getId()));
+                        Result result1 = new Result(result.getId(), result.getTitle(), result.getReleaseDate(), result.getVoteAverage(), result.getOverview(), result.getPosterPath(), result.getAdult());
+                        MainActivity.dbManager.addFavourite(result1);
                         notifyDataSetChanged();
                     }
                 }
             });
+
+
+            ((ListViewHolder) holder).itemLayout.setOnClickListener(mOnClickListener);
+            ((ListViewHolder) holder).itemLayout.setTag(result);
         } else if (holder instanceof GridViewHolder) {
             ((GridViewHolder) holder).titleTxt.setText(result.getTitle());
             Picasso.with(mContext).load(Common.URL_LOAD_IMAGE + result.getPosterPath()).into(((GridViewHolder) holder).thumbnailImg);
@@ -168,6 +181,7 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         public TextView overViewTxt;
         public ImageView starImg;
         public ImageView sexImg;
+        public RelativeLayout itemLayout;
 
         public ListViewHolder(View itemView) {
             super(itemView);
@@ -178,6 +192,7 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             overViewTxt = itemView.findViewById(R.id.item_movie_list_overview_txt);
             starImg = itemView.findViewById(R.id.item_movie_list_star_img);
             sexImg = itemView.findViewById(R.id.item_movie_list_sex_img);
+            itemLayout = itemView.findViewById(R.id.item_list_layout);
         }
     }
 

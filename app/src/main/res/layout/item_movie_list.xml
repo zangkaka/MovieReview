@@ -5,6 +5,7 @@
     android:layout_margin="6dp">
 
     <RelativeLayout
+        android:id="@+id/item_list_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
@@ -110,7 +111,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/item_movie_list_overview"
                     android:ellipsize="end"
-                    android:maxLines="4" />
+                    android:maxLines="5" />
             </RelativeLayout>
         </LinearLayout>
     </RelativeLayout>
