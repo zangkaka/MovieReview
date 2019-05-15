@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.giangdm.moviereview.R;
 import com.giangdm.moviereview.activities.MainActivity;
+import com.giangdm.moviereview.database.DBManager;
 import com.giangdm.moviereview.interfaces.ILoadMore;
 import com.giangdm.moviereview.models.Result;
 import com.giangdm.moviereview.utils.Common;
@@ -130,6 +131,8 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
             ((ListViewHolder) holder).itemLayout.setOnClickListener(mOnClickListener);
             ((ListViewHolder) holder).itemLayout.setTag(result);
+            Log.d(TAG, "onBindViewHolder: "+ ((LinearLayoutManager)mRecyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition());
+            getPosition();
         } else if (holder instanceof GridViewHolder) {
             ((GridViewHolder) holder).titleTxt.setText(result.getTitle());
             Picasso.with(mContext).load(Common.URL_LOAD_IMAGE + result.getPosterPath()).into(((GridViewHolder) holder).thumbnailImg);
@@ -137,7 +140,9 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             ((LoadingViewHolder) holder).progressBar.setIndeterminate(true);
         }
     }
-
+public int getPosition() {
+        return ((LinearLayoutManager)mRecyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+}
     @Override
     public int getItemCount() {
         if (movieList == null) {
@@ -169,9 +174,12 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     public boolean toogleItemViewType() {
+//        mRecyclerView.scrollToPosition(i);
         isSwitchView = !isSwitchView;
         return isSwitchView;
     }
+
+
 
     public class ListViewHolder extends RecyclerView.ViewHolder {
         public TextView titleTxt;
