@@ -99,7 +99,7 @@ public class MoviesFragment extends Fragment implements SwipeRefreshLayout.OnRef
         if (Common.isNetworkConnected(getContext())) {
             new LoadData().execute(Common.URL_LOAD_MOVIE_POPULAR + String.valueOf(mPage));
             // handler load more
-            loadMoreList();
+//            loadMoreList();
         } else {
             Toast.makeText(getContext(), "No network", Toast.LENGTH_LONG).show();
         }
@@ -223,7 +223,7 @@ public class MoviesFragment extends Fragment implements SwipeRefreshLayout.OnRef
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         MenuItem menuItem = menu.findItem(R.id.action_change_view);
-//        menuItem.setIcon(mIsChangeView ? R.drawable.ic_view_list : R.drawable.ic_view_grid);
-        menuItem.setVisible(false);
+        menuItem.setIcon(mIsChangeView ? R.drawable.ic_view_list : R.drawable.ic_view_grid);
+//        menuItem.setVisible(false);
     }
 }
